@@ -20,6 +20,11 @@ type ststats struct {
 	netChange float64
 }
 
+func calculateStockScore(st ststats) int {
+	score := 0
+	return score
+}
+
 func convertToFloat(numString string) float64 {
 	var result float64
 	if numString[len(numString)-1] == '%' {
@@ -61,7 +66,7 @@ func main() {
                 fmt.Println("ioutil.ReadAll", err)
                 return
         }
-        stock1 := ststats{"msft",0,0,0,0,0,0,0}
+        stock1 := ststats{"goog",0,0,0,0,0,0,0}
 
         strs := pmre.FindSubmatch(body)
 	stock1.pMargin = convertToFloat(string(strs[1]))
