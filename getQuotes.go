@@ -4,6 +4,7 @@ import (
         "fmt"
         "net/http"
         "io/ioutil"
+        "strings"
 )
 
 // http://finance.yahoo.com/d/quotes.csv?s=bwld+ctsh&f=snl1
@@ -15,14 +16,18 @@ func main() {
                 return
         }
         defer res.Body.Close()
+        //Grab the results from the call into a byte array?
         body, err := ioutil.ReadAll(res.Body)
         if err != nil {
                 fmt.Println("ioutil.ReadAll", err)
                 return
         }
-        lenp := len(body)
-        //if maxp := 60; lenp > maxp {
-        //        lenp = maxp
-        //}
-        fmt.Println(len(body), string(body[:lenp]))
+        //Convert the byte array into each line, and convert to a string
+	for _, line := range strings.Split(string(body), "\n") {
+		if (len(line) > 0) {
+			// TBD - parse CSV line into fields, store in DB
+			fmt.Println("line splitter =",line)
+	  	}
+	}        
+
 }
