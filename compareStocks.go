@@ -17,6 +17,7 @@ type ststats struct {
 	revenueGrowth float64
 	yrChange float64
 	spyrChange float64
+	netChange float64
 }
 
 func convertToFloat(numString string) float64 {
@@ -31,10 +32,9 @@ func convertToFloat(numString string) float64 {
 	return result
 }
 
-// populate fields in structure for one ticker
-// pass tickers in via command line
-// loop through, populating the full structure
 // score each ticker
+// pass tickers in via command line
+// loop through, populating the full structure for all tickers
 func main() {
         argsWithoutProg := os.Args[1:]
         fmt.Println(argsWithoutProg)
@@ -42,11 +42,14 @@ func main() {
         //r := regexp.MustCompile("Profit Margin (ttm):</td><td [^>].>([^<]+)</td>")
         pmre := regexp.MustCompile("Profit Margin.*?</td><td.*?>(.*?)</td>")
         prre := regexp.MustCompile("PEG Ratio.*?</td><td.*?>(.*?)</td>")
+        rgre := regexp.MustCompile("Qtrly Revenue.*?</td><td.*?>(.*?)</td>")
+        ycre := regexp.MustCompile("52-Week Change.*?</td><td.*?>(.*?)</td>")
+        scre := regexp.MustCompile("P500 52-Week Change.*?</td><td.*?>(.*?)</td>")
 
 
 
         //res, err := http.Get("http://finance.yahoo.com/d/quotes.csv?s=bwld+ctsh+cybx+dar+jazz+mwiv+pcp+pets+rex+voxx&f=snl1")
-        res, err := http.Get("http://finance.yahoo.com/q/ks?s=msft")
+        res, err := http.Get("http://finance.yahoo.com/q/ks?s=goog")
         if err != nil {
                 fmt.Println("http.Get", err)
                 return
@@ -58,13 +61,24 @@ func main() {
                 fmt.Println("ioutil.ReadAll", err)
                 return
         }
-        stock1 := ststats{"msft",0,0,0,0,0,0}
+        stock1 := ststats{"msft",0,0,0,0,0,0,0}
 
         strs := pmre.FindSubmatch(body)
 	stock1.pMargin = convertToFloat(string(strs[1]))
 	
         strs = prre.FindSubmatch(body)
 	stock1.pegRatio = convertToFloat(string(strs[1]))
+	
+        strs = rgre.FindSubmatch(body)
+	stock1.revenueGrowth = convertToFloat(string(strs[1]))
+	
+        strs = ycre.FindSubmatch(body)
+	stock1.yrChange = convertToFloat(string(strs[1]))
+	
+        strs = scre.FindSubmatch(body)
+	stock1.spyrChange = convertToFloat(string(strs[1]))
+	
+	stock1.netChange = stock1.yrChange - stock1.spyrChange
 	
 	
 	fmt.Println(stock1)
