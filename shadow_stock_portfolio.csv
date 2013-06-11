@@ -1,0 +1,35 @@
+Company (Ticker),,,Current Price,52-Week,,Market-Cap Size,Price-Earnings Ratio,Price-to-Book Ratio,Dividend Yield,Notes
+,,,,High,Low,,,,,
+,Company,Ticker,($),($),($),($ mil),(X),(X),(%),
+Addus Homecare Corporation (ADUS),Addus Homecare Corporation,ADUS,12.53,14.6,3.57,136.1,21.2,1.49,0.0,
+"Alamo Group, Inc. (ALG)","Alamo Group, Inc.",ALG,41.73,42.66,27.07,503.8,17.4,1.61,0.7,
+Alpha and Omega Semiconductor (AOSL),Alpha and Omega Semiconductor,AOSL,7.5,10.45,6.64,190.7,39.5,0.67,0.0,
+"CSS Industries, Inc. (CSS)","CSS Industries, Inc.",CSS,29.85,30.12,17.86,282.6,19.3,1.13,2.0,
+Ducommun Incorporated (DCO),Ducommun Incorporated,DCO,25.15,25.74,7.71,266.7,16.2,1.20,0.0,
+"Ennis, Inc. (EBF)","Ennis, Inc.",EBF,15.16,17.07,13.704,396.5,16,1.10,4.6,
+"Flexsteel Industries, Inc. (FLXS)","Flexsteel Industries, Inc.",FLXS,19.24,26.29,18.68,136.7,10.5,0.93,3.1,
+Gilat Satellite Networks Ltd. (GILT),Gilat Satellite Networks Ltd.,GILT,5.56,6.2,2.31,231.8,nmf,0.96,0.0,
+Hardinge Inc. (HDNG),Hardinge Inc.,HDNG,13.79,14.279,8.2,162.2,9,0.99,0.6,
+Hooker Furniture Corporation (HOFT),Hooker Furniture Corporation,HOFT,17.25,18.309,10.01,185.4,21.6,1.41,2.3,
+Key Tronic Corporation (KTCC),Key Tronic Corporation,KTCC,10.7,12.78,7.15,112.2,8.3,1.21,0.0,
+Kimball International (KBALB),Kimball International,KBALB,9.45,13.25,6.72,282.3,20.5,0.91,2.1,
+Marlin Business Services Corp. (MRLN),Marlin Business Services Corp.,MRLN,25.33,25.97,13.33,325.8,23.9,1.80,1.6,
+Medical Action Industries (MDCI),Medical Action Industries,MDCI,8.5,8.58,2.25,139.3,nmf,1.48,0.0,
+"Mitcham Industries, Inc. (MIND)","Mitcham Industries, Inc.",MIND,14.56,23.089,11.51,186.9,11.5,1.06,0.0,
+"Olympic Steel, Inc. (ZEUS)","Olympic Steel, Inc.",ZEUS,22.32,25.39,14.77,244.3,106.3,0.85,0.4,
+"PC Connection, Inc. (PCCC)","PC Connection, Inc.",PCCC,16.93,17.62,8.28,442.2,13.7,1.53,0.0,
+PCM Inc (PCMI),PCM Inc,PCMI,7.58,9.109,5.06,86.9,18,0.78,0.0,qualified as of 5/3/2013
+"RCM Technologies, Inc. (RCMT)","RCM Technologies, Inc.",RCMT,5.7,6.72,4.891,70.2,21.9,1.17,0.0,
+Renewable Energy Group Inc (REGI),Renewable Energy Group Inc,REGI,11.85,12.05,4.28,364,62.4,1.19,0.0,
+REX American Resources Corp (REX),REX American Resources Corp,REX,18.9,25.96,14.43,154.6,nmf,0.63,0.0,earnings probation (2013 Q4)
+"Rocky Brands, Inc. (RCKY)","Rocky Brands, Inc.",RCKY,14.83,16,10.74,111.5,12.4,0.88,0.0,
+"Saga Communications, Inc. (SGA)","Saga Communications, Inc.",SGA,46,51.61,25.313,261.3,16.7,4.37,0.0,approaching value limit
+Salem Communications Corp (SALM),Salem Communications Corp,SALM,8.92,10.14,4.25,220.1,49.6,1.07,2.2,
+"Shoe Carnival, Inc. (SCVL)","Shoe Carnival, Inc.",SCVL,20.37,24.66,18.8,417,14.2,1.38,1.2,
+"Standard Motor Products, Inc. (SMP)","Standard Motor Products, Inc.",SMP,31.36,32.18,11.94,734,16.8,2.33,1.4,approaching value and size limit
+"Sterling Construction Company, (STRL)","Sterling Construction Company,",STRL,10.29,11.88,7.12,170.8,nmf,0.81,0.0,
+TravelCenters of America LLC (TA),TravelCenters of America LLC,TA,11.78,12.5,4.18,347.9,10.5,0.91,0.0,
+VOXX International Corp (VOXX),VOXX International Corp,VOXX,9.25,14.08,5.55,217.6,9.4,0.50,0.0,qualified as of 5/3/2013
+Willis Lease Finance Corporati (WLFC),Willis Lease Finance Corporati,WLFC,14.49,16.28,11.31,125.8,nmf,0.60,0.0,
+,,,,,,,,,,
+Source: AAII's Stock Investor Pro/Thomson Reuters. Data as of 5/3/2013.,,,,,,,,,,
