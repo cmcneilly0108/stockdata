@@ -76,6 +76,8 @@ func convertToFloat(numString string) float64 {
 
 // pass tickers in via command line
 // loop through, populating the full structure for all tickers
+// sort by score and return recommendation
+// scrape a different page for list of tickers
 func main() {
 	argsWithoutProg := os.Args[1:]
 	fmt.Println(argsWithoutProg)
