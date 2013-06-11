@@ -7,6 +7,7 @@ import (
 	"io/ioutil"
 	"regexp"
 	"os"
+	"bufio"
 	)
 
 var (
@@ -107,12 +108,44 @@ func createStock(ticker string, body []byte) ststats {
 	return stock
 }
 
+func createStockCSV(l []ststats) {
+	fo, err := os.Create("stocks.csv")
+	if err != nil { panic(err) }
+
+	// make a write buffer
+    	w := bufio.NewWriter(fo)
+    	header := "Ticker,Score,PEG Ratio,Profit Margin,YOY Growth,Growth Diff\n"
+	if _, err := w.WriteString(header); err != nil {
+	    panic(err)
+	}
+
+    	for _,st := range l {
+    		line := st.ticker + "," + strconv.Itoa(st.score) + ","
+    		s := strconv.FormatFloat(st.pegRatio,'f',2,64)
+    		line +=  s + ","
+    		s = strconv.FormatFloat(st.pMargin,'f',3,64)
+    		line +=  s + ","
+    		s = strconv.FormatFloat(st.revenueGrowth,'f',3,64)
+    		line +=  s + ","
+    		s = strconv.FormatFloat(st.netChange,'f',3,64)
+    		line +=  s
+    		line +=  "\n"
+		// write a chunk
+		if _, err := w.WriteString(line); err != nil {
+		    panic(err)
+		}
+	}
+
+	if err = w.Flush(); err != nil { panic(err) }
+	fo.Close()
+}
+
 // write slice to csv file
 // scrape a different page for list of tickers
 
 func main() {
 	args := os.Args[1:]
-	stocks := make([]ststats, 0, len(args))
+	var stocks []ststats
 
 	for _,t := range args {
 		url := "http://finance.yahoo.com/q/ks?s=" + string(t)
@@ -134,4 +167,5 @@ func main() {
 		
 		fmt.Println(stock1)
 	}
+	createStockCSV(stocks)
 }
