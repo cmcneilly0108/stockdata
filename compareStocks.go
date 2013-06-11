@@ -107,8 +107,8 @@ func createStock(ticker string, body []byte) ststats {
 	return stock
 }
 
-// loop through, populating the full structure for all tickers
-// sort by score and return recommendation
+// stash strucs in slice
+// write slice to csv file
 // scrape a different page for list of tickers
 
 func main() {
