@@ -81,8 +81,7 @@ func main() {
 	fmt.Println(argsWithoutProg)
 	ticker := argsWithoutProg[0]
 	url := "http://finance.yahoo.com/q/ks?s=" + ticker
-	// Profit Margin (ttm):</td><td class="yfnc_tabledata1">21.58%</td>
-	//r := regexp.MustCompile("Profit Margin (ttm):</td><td [^>].>([^<]+)</td>")
+
 	pmre := regexp.MustCompile("Profit Margin.*?</td><td.*?>(.*?)</td>")
 	prre := regexp.MustCompile("PEG Ratio.*?</td><td.*?>(.*?)</td>")
 	rgre := regexp.MustCompile("Qtrly Revenue.*?</td><td.*?>(.*?)</td>")
@@ -127,11 +126,5 @@ func main() {
 	
 	
 	fmt.Println(stock1)
-	/*for _, line := range strings.Split(string(body), "\n") {
-		if (len(line) > 0) {
-			// TBD - parse CSV line into fields, store in DB
-			fmt.Println("line splitter =",line)
-	  	}
-	} */ 
 	
 }
