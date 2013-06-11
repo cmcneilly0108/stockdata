@@ -107,15 +107,12 @@ func createStock(ticker string, body []byte) ststats {
 	return stock
 }
 
-// stash strucs in slice
 // write slice to csv file
 // scrape a different page for list of tickers
 
 func main() {
 	args := os.Args[1:]
-	fmt.Println(args)
-
-	//url := ""
+	stocks := make([]ststats, 0, len(args))
 
 	for _,t := range args {
 		url := "http://finance.yahoo.com/q/ks?s=" + string(t)
@@ -133,8 +130,8 @@ func main() {
 		}
 		res.Body.Close()
 		stock1 := createStock(t,body)
+		stocks = append(stocks,stock1)
 		
 		fmt.Println(stock1)
 	}
-	
 }
