@@ -83,6 +83,21 @@ func convertToFloat(numString string) float64 {
 	return result
 }
 
+func readTickerFile() []string {
+	var tickers []string
+	ticre := regexp.MustCompile("\\(([A-Z]+)\\)")
+    	b, err := ioutil.ReadFile("shadow_stock_portfolio.csv")
+    	if err != nil { panic(err) }
+    	
+	fstr := string(b)
+	t2 := ticre.FindAllStringSubmatch(fstr, -1)
+	fmt.Println(t2)
+	for _,s := range t2 {
+		tickers = append(tickers,s[1])
+	}
+	return tickers
+}
+
 func createStock(ticker string, body []byte) ststats {
 	stock := ststats{ticker,0,0,0,0,0,0,0}
 	
@@ -146,8 +161,12 @@ func createStockCSV(l []ststats) {
 func main() {
 	args := os.Args[1:]
 	var stocks []ststats
+	fmt.Println(args)
+	
+	newTickers := readTickerFile()
+	fmt.Println(newTickers)
 
-	for _,t := range args {
+	for _,t := range newTickers {
 		url := "http://finance.yahoo.com/q/ks?s=" + string(t)
 		res, err := http.Get(url)
 		if err != nil {
@@ -168,4 +187,5 @@ func main() {
 		fmt.Println(stock1)
 	}
 	createStockCSV(stocks)
+	
 }
