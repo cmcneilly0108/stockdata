@@ -8,6 +8,7 @@ import (
 	"regexp"
 	"os"
 	"bufio"
+	"flag"
 	)
 
 var (
@@ -97,10 +98,11 @@ func convertToFloat(numString string) float64 {
 	return result
 }
 
-func readTickerFile() []string {
+func readTickerFile(fn string) []string {
 	var tickers []string
 	ticre := regexp.MustCompile("\\(([A-Z]+)\\)")
-    	b, err := ioutil.ReadFile("shadow_stock_portfolio.csv")
+    	//b, err := ioutil.ReadFile("shadow_stock_portfolio.csv")
+    	b, err := ioutil.ReadFile(fn)
     	if err != nil { panic(err) }
     	
 	fstr := string(b)
@@ -137,8 +139,8 @@ func createStock(ticker string, body []byte) ststats {
 	return stock
 }
 
-func createStockCSV(l []ststats) {
-	fo, err := os.Create("stocks.csv")
+func createStockCSV(l []ststats, fn string) {
+	fo, err := os.Create(fn)
 	if err != nil { panic(err) }
 
 	// make a write buffer
@@ -172,12 +174,21 @@ func createStockCSV(l []ststats) {
 // pass command line flag to process args or file - file name
 
 func main() {
+	
+	fName := flag.String("in", "", "grab the tickers from a file")
+	oFile := flag.String("out", "results.csv", "name of the results file to be created")
 	args := os.Args[1:]
+	flag.Parse()
 	var stocks []ststats
 	fmt.Println(args)
-	
-	newTickers := readTickerFile()
-	fmt.Println(newTickers)
+	var newTickers []string
+
+	if (len(*fName) > 0) {	
+		newTickers = readTickerFile(*fName)
+		fmt.Println(newTickers)
+	} else {
+		newTickers = args
+	}
 
 	for _,t := range newTickers {
 		url := "http://finance.yahoo.com/q/ks?s=" + string(t)
@@ -199,6 +210,6 @@ func main() {
 		
 		fmt.Println(stock1)
 	}
-	createStockCSV(stocks)
+	createStockCSV(stocks,*oFile)
 	
 }
