@@ -31,6 +31,8 @@ type ststats struct {
 
 func calculateStockScore(st ststats) int {
 	score := 0
+
+	// pegRatio	
 	if (st.pegRatio < 1) {
 		score++
 	}
@@ -40,6 +42,8 @@ func calculateStockScore(st ststats) int {
 	if (st.pegRatio > 2.5) {
 		score--
 	}
+
+	// Profit Margin
 	if (st.pMargin > .1) {
 		score++
 	}
@@ -49,22 +53,32 @@ func calculateStockScore(st ststats) int {
 	if (st.pMargin < 0) {
 		score--
 	}
+
+	// Revenue Growth
 	if (st.revenueGrowth > .1) {
 		score++
 	}
 	if (st.revenueGrowth > .3) {
 		score++
 	}
+	if (st.revenueGrowth > .7) {
+		score++
+	}
 	if (st.revenueGrowth < 0) {
 		score--
 	}
+	
+	// Net Change
 	if (st.netChange > 0) {
 		score++
 	}
-	if (st.netChange > .1) {
+	if (st.netChange > .2) {
 		score++
 	}
 	if (st.netChange < 0) {
+		score--
+	}
+	if (st.netChange < -.1) {
 		score--
 	}
 	
@@ -156,7 +170,6 @@ func createStockCSV(l []ststats) {
 }
 
 // pass command line flag to process args or file - file name
-// optimize scoring algorithm
 
 func main() {
 	args := os.Args[1:]
