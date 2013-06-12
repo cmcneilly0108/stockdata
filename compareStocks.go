@@ -155,8 +155,8 @@ func createStockCSV(l []ststats) {
 	fo.Close()
 }
 
-// write slice to csv file
-// scrape a different page for list of tickers
+// pass command line flag to process args or file - file name
+// optimize scoring algorithm
 
 func main() {
 	args := os.Args[1:]
