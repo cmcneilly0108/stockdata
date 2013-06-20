@@ -30,7 +30,7 @@ type ststats struct {
 	netChange float64
 }
 
-func calculateStockScore(st ststats) int {
+func (st ststats) calculateStockScore() int {
 	score := 0
 
 	// pegRatio	
@@ -134,7 +134,9 @@ func createStock(ticker string, body []byte) ststats {
 	
 	stock.netChange = stock.yrChange - stock.spyrChange
 	
-	stock.score = calculateStockScore(stock)
+	//stock.score = calculateStockScore(stock)
+	stock.score = stock.calculateStockScore()
+	//stock.calculateStockScore() - how do I do this?
 	
 	return stock
 }
@@ -192,9 +194,7 @@ func worker(id int, tickers <-chan string, results chan<- ststats) {
     }
 }
 
-// create a pool of goroutines that create the strucs, pass tickers and strucs
-// back and forth via channels
-
+// interfaces
 func main() {
 	
 	fName := flag.String("in", "", "grab the tickers from a file")
