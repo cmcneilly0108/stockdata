@@ -30,7 +30,7 @@ type ststats struct {
 	netChange float64
 }
 
-func (st ststats) calculateStockScore() int {
+func (st *ststats) calculateStockScore() {
 	score := 0
 
 	// pegRatio	
@@ -83,7 +83,7 @@ func (st ststats) calculateStockScore() int {
 		score--
 	}
 	
-	return score
+	st.score = score
 }
 
 func convertToFloat(numString string) float64 {
@@ -134,9 +134,7 @@ func createStock(ticker string, body []byte) ststats {
 	
 	stock.netChange = stock.yrChange - stock.spyrChange
 	
-	//stock.score = calculateStockScore(stock)
-	stock.score = stock.calculateStockScore()
-	//stock.calculateStockScore() - how do I do this?
+	stock.calculateStockScore()
 	
 	return stock
 }
