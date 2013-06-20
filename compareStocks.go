@@ -34,10 +34,10 @@ func calculateStockScore(st ststats) int {
 	score := 0
 
 	// pegRatio	
-	if (st.pegRatio < 1) {
+	if (st.pegRatio > 0 && st.pegRatio < 1) {
 		score++
 	}
-	if (st.pegRatio < 1.5) {
+	if (st.pegRatio > 0 && st.pegRatio < 1.5) {
 		score++
 	}
 	if (st.pegRatio > 2.5) {
@@ -171,26 +171,9 @@ func createStockCSV(l []ststats, fn string) {
 	fo.Close()
 }
 
-// pass command line flag to process args or file - file name
-
-func main() {
-	
-	fName := flag.String("in", "", "grab the tickers from a file")
-	oFile := flag.String("out", "results.csv", "name of the results file to be created")
-	args := os.Args[1:]
-	flag.Parse()
-	var stocks []ststats
-	fmt.Println(args)
-	var newTickers []string
-
-	if (len(*fName) > 0) {	
-		newTickers = readTickerFile(*fName)
-		fmt.Println(newTickers)
-	} else {
-		newTickers = args
-	}
-
-	for _,t := range newTickers {
+func worker(id int, tickers <-chan string, results chan<- ststats) {
+    for t := range tickers {
+        fmt.Println("worker", id, "processing ticker", t)
 		url := "http://finance.yahoo.com/q/ks?s=" + string(t)
 		res, err := http.Get(url)
 		if err != nil {
@@ -205,11 +188,52 @@ func main() {
 			return
 		}
 		res.Body.Close()
-		stock1 := createStock(t,body)
-		stocks = append(stocks,stock1)
-		
-		fmt.Println(stock1)
+		results <- createStock(t,body)
+    }
+}
+
+// create a pool of goroutines that create the strucs, pass tickers and strucs
+// back and forth via channels
+
+func main() {
+	
+	fName := flag.String("in", "", "grab the tickers from a file")
+	oFile := flag.String("out", "results.csv", "name of the results file to be created")
+	args := os.Args[1:]
+	flag.Parse()
+	var stocks []ststats
+	var stock1 ststats
+	fmt.Println(args)
+	var newTickers []string
+
+    tickers := make(chan string, 100)
+    results := make(chan ststats, 100)
+
+	for w := 1; w <= 3; w++ {
+        go worker(w, tickers, results)
+    }
+
+	
+	if (len(*fName) > 0) {	
+		newTickers = readTickerFile(*fName)
+		fmt.Println(newTickers)
+	} else {
+		newTickers = args
 	}
+
+	tcount := 0
+	for _,t := range newTickers {
+		
+		tickers <- t
+		tcount++
+	}
+
+	for a := 1; a <= tcount; a++ {
+		stock1 = <-results
+		stocks = append(stocks,stock1)
+    }
+
+	close(tickers)
 	createStockCSV(stocks,*oFile)
 	
 }
