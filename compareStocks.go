@@ -192,7 +192,6 @@ func worker(id int, tickers <-chan string, results chan<- ststats) {
     }
 }
 
-// interfaces
 func main() {
 	
 	fName := flag.String("in", "", "grab the tickers from a file")
