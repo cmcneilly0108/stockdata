@@ -5,8 +5,20 @@ library(scales)
 library(lubridate)
 # Get historical data for each of my 10 stocks
 holdings <- c('ALG','BWLD','DAR','JAZZ','MWIV','FLXS','PCCC','REGI','REX','VOXX','SPY')
-prospects <- c('SPY','KBALB','ISH','FLXS','SMP','WLFC','DCO')
+#prospects <- c('SPY','KBALB','ISH','FLXS','SMP','WLFC','DCO')
 #t2 = c('VOXX')
+
+h2 <- read.csv("pfmDownload.csv",skip=10)
+h2 <- filter(h2,!(Symbol %in% c(' ','Cash','YAFFX','PENNX','HFCGX','FAGIX','CHTTX','RZV','DGS')))
+h2$Ticker <- as.character(h2$Symbol)
+holdings <- h2$Ticker
+
+
+p2 <- read.csv("results.csv")
+p2 <- filter(p2,Score > 2,!(Ticker %in% holdings))
+p2$Ticker <- as.character(p2$Ticker)
+prospects <- p2$Ticker
+prospects <- c(prospects,'SPY')
 
 getPrices <- function(x){
   prices <- as.data.frame(Cl(x))
@@ -56,9 +68,9 @@ compareStocks <- function(tickers) {
   print(results[order(-results$gain),c('ticker','gainP')])
 }
 
-compareStocks(holdings)
+todrop <- compareStocks(holdings)
 
-compareStocks(prospects)
+picks <- compareStocks(prospects)
 # Color code compared to SPY for same periods
 # Go back to original financial package and see how much of this it can do
 
