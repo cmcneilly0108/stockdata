@@ -1,24 +1,31 @@
+# TODOs
+# Stop using plyr
+# Create spreadsheet
+# Improve parsing of pfm - remove blank rows at bottom
+# Auto download files - aaii, etrade
+
 library(quantmod)
 library(plyr)
+library(dplyr)
 library(ggplot2)
 library(scales)
 library(lubridate)
-# Get historical data for each of my 10 stocks
-holdings <- c('ALG','BWLD','DAR','JAZZ','MWIV','FLXS','PCCC','REGI','REX','VOXX','SPY')
-#prospects <- c('SPY','KBALB','ISH','FLXS','SMP','WLFC','DCO')
-#t2 = c('VOXX')
 
 h2 <- read.csv("pfmDownload.csv",skip=10)
 h2 <- filter(h2,!(Symbol %in% c(' ','Cash','YAFFX','PENNX','HFCGX','FAGIX','CHTTX','RZV','DGS')))
 h2$Ticker <- as.character(h2$Symbol)
 holdings <- h2$Ticker
+holdings <- c(holdings,'EBAY')
 
-
-p2 <- read.csv("results.csv")
-p2 <- filter(p2,Score > 2,!(Ticker %in% holdings))
+p <- read.csv('shadow_stock_portfolio.csv',skip=2)
+#p2 <- read.csv("results.csv")
+p2 <- filter(p,!(Ticker %in% holdings))
+#p2 <- filter(p2,Score > 1,!(Ticker %in% holdings))
 p2$Ticker <- as.character(p2$Ticker)
 prospects <- p2$Ticker
 prospects <- c(prospects,'SPY')
+
+candidates <- filter(h2,!(Ticker %in% prospects))
 
 getPrices <- function(x){
   prices <- as.data.frame(Cl(x))
@@ -37,12 +44,12 @@ getPrices <- function(x){
 compareStocks <- function(tickers) {
   # calculate start 1 year from today
   #sDate <- today() - years(1)
-  sDate <- today() - months(9)
+  sDate <- today() - months(3)
   getSymbols(tickers,src='yahoo',from=as.character(sDate))
   data <- mget(tickers)
   allPrices <- ldply(data,getPrices)
   colnames(allPrices) <- c('ticker','close','date')
-  print(head(allPrices))
+  #print(head(allPrices))
   
   # Find Start price and append to rows
   iPrice <- allPrices[allPrices$date==min(allPrices$date),]
@@ -71,6 +78,8 @@ compareStocks <- function(tickers) {
 todrop <- compareStocks(holdings)
 
 picks <- compareStocks(prospects)
+
+filter(h2,!(Ticker %in% p$Ticker))
 # Color code compared to SPY for same periods
 # Go back to original financial package and see how much of this it can do
 
