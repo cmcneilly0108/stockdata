@@ -118,23 +118,34 @@ func createStock(ticker string, body []byte) ststats {
 	stock := ststats{ticker,0,0,0,0,0,0,0}
 	
 	strs := pmre.FindSubmatch(body)
-	stock.pMargin = convertToFloat(string(strs[1]))
-	
+	if len(strs) > 0 {
+		stock.pMargin = convertToFloat(string(strs[1]))
+		}
+
 	strs = prre.FindSubmatch(body)
-	stock.pegRatio = convertToFloat(string(strs[1]))
+	if len(strs) > 0 {
+		stock.pegRatio = convertToFloat(string(strs[1]))
+		}
 	
 	strs = rgre.FindSubmatch(body)
-	stock.revenueGrowth = convertToFloat(string(strs[1]))
+	if len(strs) > 0 {
+		stock.revenueGrowth = convertToFloat(string(strs[1]))
+		}
 	
 	strs = ycre.FindSubmatch(body)
-	stock.yrChange = convertToFloat(string(strs[1]))
+	if len(strs) > 0 {
+		stock.yrChange = convertToFloat(string(strs[1]))
+		}
 	
 	strs = scre.FindSubmatch(body)
-	stock.spyrChange = convertToFloat(string(strs[1]))
+	if len(strs) > 0 {
+		stock.spyrChange = convertToFloat(string(strs[1]))
+		}
 	
 	stock.netChange = stock.yrChange - stock.spyrChange
 	
 	stock.calculateStockScore()
+	//fmt.Println("finished a stock", ticker)
 	
 	return stock
 }
@@ -175,20 +186,23 @@ func worker(id int, tickers <-chan string, results chan<- ststats) {
     for t := range tickers {
         fmt.Println("worker", id, "processing ticker", t)
 		url := "http://finance.yahoo.com/q/ks?s=" + string(t)
+		//fmt.Println("url", url)
 		res, err := http.Get(url)
 		if err != nil {
 			fmt.Println("http.Get", err)
 			return
 		}
-
+		//fmt.Println("Here - http.Get ticker", t)
 		//Grab the results from the call into a byte array?
 		body, err := ioutil.ReadAll(res.Body)
 		if err != nil {
 			fmt.Println("ioutil.ReadAll", err)
 			return
 		}
+		//fmt.Println("Here - http.ReadAll ticker", t)
 		res.Body.Close()
 		results <- createStock(t,body)
+		//fmt.Println("Here - finished with ticker", t)
     }
 }
 
@@ -206,7 +220,7 @@ func main() {
     tickers := make(chan string, 100)
     results := make(chan ststats, 100)
 
-	for w := 1; w <= 3; w++ {
+	for w := 1; w <= 5; w++ {
         go worker(w, tickers, results)
     }
 

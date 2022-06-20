@@ -1,23 +1,38 @@
 # TODOs
-# Stop using plyr
-# Create spreadsheet
+# Create spreadsheet - 3 tabs
+# Auto download files - etrade
 # Improve parsing of pfm - remove blank rows at bottom
-# Auto download files - aaii, etrade
+# Bring back the notes column
+# Add 12-month performance report
 
 library(quantmod)
-library(plyr)
 library(dplyr)
-library(ggplot2)
 library(scales)
 library(lubridate)
+library(stringr)
+library(xlsx)
 
-h2 <- read.csv("pfmDownload.csv",skip=10)
-h2 <- filter(h2,!(Symbol %in% c(' ','Cash','YAFFX','PENNX','HFCGX','FAGIX','CHTTX','RZV','DGS')))
+h2 <- read.csv("pfmDownload.csv",stringsAsFactors=FALSE)
+#h2 <- read.csv("pfmDownload.csv",skip=10)
+h2 <- filter(h2,!(Symbol %in% c(' ','Cash','YAFFX','PENNX','HFCGX','FAGIX','CHTTX','RZV','DGS','FM','VNQ','FPX')))
 h2$Ticker <- as.character(h2$Symbol)
 holdings <- h2$Ticker
-holdings <- c(holdings,'EBAY')
+#holdings <- c(holdings,'EBAY','PYPL')
 
-p <- read.csv('shadow_stock_portfolio.csv',skip=2)
+
+# update!  run bash shell, load xlsx, convert
+# Update data files
+fd <- file.info("ss.xlsx")$mtime
+cd <- Sys.time()
+dt <- difftime(cd, fd, units = "hours")
+if (dt > 10) {
+  system("./getSS.sh")
+}
+
+p <- read.xlsx('ss.xlsx',1,startRow=3)
+p <- filter(p,!is.na(Ticker))
+
+#p <- read.csv('shadow_stock_portfolio.csv',skip=2,stringsAsFactors=FALSE)
 #p2 <- read.csv("results.csv")
 p2 <- filter(p,!(Ticker %in% holdings))
 #p2 <- filter(p2,Score > 1,!(Ticker %in% holdings))
@@ -44,7 +59,7 @@ getPrices <- function(x){
 compareStocks <- function(tickers) {
   # calculate start 1 year from today
   #sDate <- today() - years(1)
-  sDate <- today() - months(3)
+  sDate <- today() - months(4)
   getSymbols(tickers,src='yahoo',from=as.character(sDate))
   data <- mget(tickers)
   allPrices <- ldply(data,getPrices)
@@ -74,12 +89,18 @@ compareStocks <- function(tickers) {
   # Sort results by gain descending
   print(results[order(-results$gain),c('ticker','gainP')])
 }
-
+print("Collecting Holdings")
 todrop <- compareStocks(holdings)
 
+print("Collecting Prospects")
 picks <- compareStocks(prospects)
 
-filter(h2,!(Ticker %in% p$Ticker))
+#filter(h2,!(Ticker %in% p$Ticker))
+
+#notes <- filter(p2,str_length(X.2)>5) %>% mutate(Notes = X.2) %>% select(Ticker,Notes) %>% print
+
+aaiiSell <- filter(todrop,!(ticker %in% p$Ticker)) %>% print
+
 # Color code compared to SPY for same periods
 # Go back to original financial package and see how much of this it can do
 

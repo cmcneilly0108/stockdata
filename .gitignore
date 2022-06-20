@@ -1,0 +1,13 @@
+
+*.csv
+*.pdf
+*.PDF
+*.png
+*.xls
+*.xlsx
+*.ods
+*.html
+*.docx
+.here
+compareStocks.go~
+getQuotes.go~
