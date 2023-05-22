@@ -1,0 +1,212 @@
+---
+title: "R Notebook"
+output:
+  html_document: default
+  html_notebook: default
+---
+
+Load in the necessary files
+
+```{r}
+# library(quantmod)
+# library(BatchGetSymbols)
+# library(plyr)
+ library(dplyr)
+# library(scales)
+# library(lubridate)
+# library(stringr)
+# library(openxlsx)
+# library(rvest)
+# #library("here")
+# #set_here()
+# 
+# getPrices <- function(x){
+#   tryCatch({
+#     prices <- as.data.frame(Cl(x))
+#     prices$date <- as.Date(rownames(prices))
+#     #print('here')
+#     #prices$ticker <- factor('SPY') # Need ticker symbol
+#     #print('h2')
+#     colnames(prices)[1] <- 'close'
+#     #print('h3')
+#     rownames(prices) <- NULL
+#     #print('Not here')
+#     prices$date <- ymd(prices$date)
+#     return(prices)
+#   }, error = function(err) {print(x)})
+# }
+# 
+# compareStocks <- function(tickers,timespan=4) {
+#   first.date <- Sys.Date() - timespan*30
+#   last.date <- Sys.Date()
+#   l.out <- BatchGetSymbols(tickers = tickers,
+#     first.date = first.date,
+#     last.date = last.date,
+#     cache.folder = file.path(tempdir(),
+#     'BGS_Cache') ) # cache in tempdir()
+#   allPrices <- l.out$df.tickers
+#   allPrices <- select(allPrices,ticker,close=price.close,date=ref.date)
+#   
+#   # Find Start price and append to rows
+#   iPrice <- allPrices[allPrices$date==min(allPrices$date),]
+#   iPrice <- subset(iPrice, select = -date)
+#   colnames(iPrice) <- c('ticker','startPrice')
+#   allPrices <- join(allPrices,iPrice)  
+#   
+#   # Scale the price by start price
+#   # allPrices$newPrice <- (allPrices$close/allPrices$startPrice) - 1
+#   allPrices$gain <- (allPrices$close/allPrices$startPrice) - 1
+#   allPrices$gainP <- percent((allPrices$close/allPrices$startPrice) - 1)
+#   
+#   results <- subset(allPrices,date==max(allPrices$date),select=c(date,ticker,gain,gainP))
+# }
+# 
+# compareStocksOLD <- function(tickers,timespan=4) {
+#   # calculate start 1 year from today
+#   #sDate <- today() - years(1)
+#   sDate <- today("GMT") - months(timespan)
+#   getSymbols(tickers,src='yahoo',from=as.character(sDate))
+#   data <- mget(tickers)
+#   allPrices <- ldply(data,getPrices)
+#   colnames(allPrices) <- c('ticker','close','date')
+#   #print(head(allPrices))
+#   
+#   # Find Start price and append to rows
+#   iPrice <- allPrices[allPrices$date==min(allPrices$date),]
+#   iPrice <- subset(iPrice, select = -date)
+#   colnames(iPrice) <- c('ticker','startPrice')
+#   allPrices <- join(allPrices,iPrice)  
+#   
+#   # Scale the price by start price
+#   # allPrices$newPrice <- (allPrices$close/allPrices$startPrice) - 1
+#   allPrices$gain <- (allPrices$close/allPrices$startPrice) - 1
+#   allPrices$gainP <- percent((allPrices$close/allPrices$startPrice) - 1)
+#   
+#   # In order to pick which one to sell
+#   #last <- max(ymd(allPrices$date[!is.na(allPrices$date)]))
+#   #first <- min(ymd(allPrices$date[!is.na(allPrices$date)]))
+#   #m3 <- last - days(90)
+#   #m6 <- last - days(180)
+#   # Create df with tickers and purchase date
+#   # Calculate gain for past year
+#   # subset(allPrices,date==last | date==m6 | date==m3,select=c(date,ticker,gain))
+#   results <- subset(allPrices,date==max(allPrices$date),select=c(date,ticker,gain,gainP))
+#   # Sort results by gain descending
+#   #print(results[order(-results$gain),c('ticker','gainP')])
+# }
+# 
+# # update!  run bash shell, load xlsx, convert
+# # Update data files
+# fd <- file.info("ss.xlsx")$mtime
+# cd <- Sys.time()
+# dt <- difftime(cd, fd, units = "hours")
+# if (dt > 10) {
+#   #system("./getSS.sh")
+#   #system("./getET.sh")
+# }
+# 
+# callmorningstar <- function(ticker) {
+#   url <- paste("http://financials.morningstar.com/company-profile/c.action?t=",
+#                 ticker,"&region=usa&culture=en-US",sep="")
+# 
+#   writeLines(sprintf("var page = require('webpage').create();
+#   page.open('%s', function () {
+#       console.log(page.content); //page source
+#       phantom.exit();
+#   });", url), con="scrape.js")
+#   
+#   system("phantomjs scrape.js > scrape.html")
+#   
+#   # extract the content you need
+#   pg <- read_html("scrape.html")
+#   nt <- html_nodes(pg, xpath='//td') %>% html_text()
+#   stockType <- nt[1]
+#   stockSector <- nt[32]
+#   stockIndustry <- nt[34]
+#   data.frame(ticker=ticker,type=stockType,sector=stockSector,industry=stockIndustry)
+# }
+
+
+```
+
+Read the files and prepare for processing
+```{r}
+et <- read.csv('etrade.csv',stringsAsFactors = FALSE,skip=10) 
+#et <- filter(et,!(Symbol %in% c('CASH','TOTAL')))
+et <- head(et,-3)
+portfolio <- mutate(et,type=ifelse(Symbol %in% c('YAFFX','PENNX','HFCGX','FAGIX','CHTTX','RZV','DGS','FM','VNQ','FPX','SPY','WHOSX','RSP','EQAL'),'fund','stock'))
+#h2 <- read.csv("pfmDownload.csv",stringsAsFactors=FALSE)
+colnames(portfolio) <- gsub("[^[:alnum:]///' ]", "", colnames(portfolio))
+h2 <- filter(portfolio,type=='stock')
+h2$Ticker <- as.character(h2$Symbol)
+holdings <- h2$Ticker
+holdings <- c(holdings,'CHGG','SPY')
+
+
+```
+
+
+Now lets analyze my mutual funds and their 12-month performance
+
+```{r}
+mfdesc <- read.csv('mfdesc.csv')
+funds <- filter(portfolio,type=="fund") %>% select(Symbol,Value)
+
+#Add in 401K
+chegg <- read.csv('chegg401k.csv',stringsAsFactors = FALSE)
+funds <- bind_rows(funds,chegg)
+
+# Add in AnnIRA
+# For some reason, I need to manually clean the csv file to make it work
+ann <- read.csv('annira.csv',stringsAsFactors = FALSE) 
+colnames(ann) <- gsub("[^[:alnum:]///' ]", "", colnames(ann))
+ann <- select(ann,Symbol,Value)
+funds <- bind_rows(funds,ann)
+
+# Add in ChrisIRA
+# For some reason, I need to manually clean the csv file to make it work
+chris <- read.csv('chrisira.csv',stringsAsFactors = FALSE) 
+colnames(chris) <- gsub("[^[:alnum:]///' ]", "", colnames(chris))
+chris <- select(chris,Symbol,Value)
+funds <- bind_rows(funds,chris)
+
+
+funds <- inner_join(funds,mfdesc)
+#mfperf <- compareStocks(funds$Symbol,12)
+#mfresults <- inner_join(funds,mfperf,by=c("Symbol" = "ticker")) %>% 
+#  arrange(-gain) %>%  
+#  select(Symbol,gainP,Value,Desc,Category)
+#mfresults
+
+ftotal <- sum(funds$Value)
+#groupsummary <- funds %>% group_by(type) %>% tally(Value) %>% mutate(share = n/ftotal)
+
+
+```
+New Goal
+20.00%	S&P (RSP, SPY, FPX)
+20.00%	MidCap (EQAL,CHTTX)
+15.00%	International (FM)
+15.00%	Bonds (WHOSX,FAGIX)
+10.00%  SmallCap (RZV)
+10.00%	Growth (HFCGX)
+10.00%	REIT (VNQ)
+
+
+Add this calculation into the results table!
+```{r}
+
+goals <- data.frame(Category = c("S&P","MidCap","International","Bonds","SmallCap","Growth","REIT"),
+                    Goal = c(.2,.2,.15,.13,.15,.1,.07))
+
+#ftotal <- groupsummary$n[groupsummary$type=='fund']
+#dist <- mfresults %>% group_by(Category) %>% tally(Value) %>% mutate(share = n/ftotal) %>% arrange(-share)
+dist <- funds %>% group_by(Category) %>% tally(Value) %>% mutate(share = n/ftotal)
+dist <- inner_join(dist,goals) %>% mutate(Dif = n - Goal*ftotal) %>% arrange(Dif)
+dist
+```
+What is the total amount of non-home retirement funds?
+```{r}
+ftotal
+```
+
