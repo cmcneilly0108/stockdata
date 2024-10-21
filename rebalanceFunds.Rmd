@@ -131,16 +131,16 @@ Load in the necessary files
 
 Read the files and prepare for processing
 ```{r}
-et <- read.csv('etrade.csv',stringsAsFactors = FALSE,skip=10) 
-#et <- filter(et,!(Symbol %in% c('CASH','TOTAL')))
-et <- head(et,-3)
-portfolio <- mutate(et,type=ifelse(Symbol %in% c('YAFFX','PENNX','HFCGX','FAGIX','CHTTX','RZV','DGS','FM','VNQ','FPX','SPY','WHOSX','RSP','EQAL'),'fund','stock'))
-#h2 <- read.csv("pfmDownload.csv",stringsAsFactors=FALSE)
-colnames(portfolio) <- gsub("[^[:alnum:]///' ]", "", colnames(portfolio))
-h2 <- filter(portfolio,type=='stock')
-h2$Ticker <- as.character(h2$Symbol)
-holdings <- h2$Ticker
-holdings <- c(holdings,'CHGG','SPY')
+# et <- read.csv('etrade.csv',stringsAsFactors = FALSE,skip=10) 
+# #et <- filter(et,!(Symbol %in% c('CASH','TOTAL')))
+# et <- head(et,-3)
+# portfolio <- mutate(et,type=ifelse(Symbol %in% c('YAFFX','PENNX','HFCGX','FAGIX','CHTTX','RZV','DGS','FM','VNQ','FPX','SPY','WHOSX','RSP','EQAL'),'fund','stock'))
+# #h2 <- read.csv("pfmDownload.csv",stringsAsFactors=FALSE)
+# colnames(portfolio) <- gsub("[^[:alnum:]///' ]", "", colnames(portfolio))
+# h2 <- filter(portfolio,type=='stock')
+# h2$Ticker <- as.character(h2$Symbol)
+# holdings <- h2$Ticker
+# holdings <- c(holdings,'CHGG','SPY')
 
 
 ```
@@ -149,12 +149,21 @@ holdings <- c(holdings,'CHGG','SPY')
 Now lets analyze my mutual funds and their 12-month performance
 
 ```{r}
+# Add in etrade
+# For some reason, I need to manually clean the csv file to make it work
+etrade <- read.csv('etrade.csv',stringsAsFactors = FALSE) 
+colnames(etrade) <- gsub("[^[:alnum:]///' ]", "", colnames(etrade))
+funds <- select(etrade,Symbol,Value)
+
+
+
 mfdesc <- read.csv('mfdesc.csv')
-funds <- filter(portfolio,type=="fund") %>% select(Symbol,Value)
+#funds <- filter(portfolio,type=="fund") %>% select(Symbol,Value)
 
 #Add in 401K
 chegg <- read.csv('chegg401k.csv',stringsAsFactors = FALSE)
 funds <- bind_rows(funds,chegg)
+
 
 # Add in AnnIRA
 # For some reason, I need to manually clean the csv file to make it work
@@ -182,22 +191,27 @@ ftotal <- sum(funds$Value)
 #groupsummary <- funds %>% group_by(type) %>% tally(Value) %>% mutate(share = n/ftotal)
 
 
+#goals <- data.frame(Category = c("S&P","MidCap","International","Bonds","SmallCap","Growth","REIT"),
+#                    Goal = c(.23,.2,.12,.13,.15,.1,.07))
+
+goals <- read.csv("mfGoals.csv",stringsAsFactors = FALSE)
+goals <- arrange(goals, -Goal)
+goals
 ```
-New Goal
-20.00%	S&P (RSP, SPY, FPX)
-20.00%	MidCap (EQAL,CHTTX)
-15.00%	International (FM)
-15.00%	Bonds (WHOSX,FAGIX)
-10.00%  SmallCap (RZV)
-10.00%	Growth (HFCGX)
-10.00%	REIT (VNQ)
+From AAII (https://www.aaii.com/asset-allocation)
+20%	Large-Cap Stocks
+20%	Mid-Cap Stocks
+20%	Small-Cap Stocks
+20%	International Stocks
+10%	Emerging Markets Stocks
+10%	Intermediate Bonds
+0%	Short-Term Bonds
 
 
 Add this calculation into the results table!
 ```{r}
 
-goals <- data.frame(Category = c("S&P","MidCap","International","Bonds","SmallCap","Growth","REIT"),
-                    Goal = c(.2,.2,.15,.13,.15,.1,.07))
+
 
 #ftotal <- groupsummary$n[groupsummary$type=='fund']
 #dist <- mfresults %>% group_by(Category) %>% tally(Value) %>% mutate(share = n/ftotal) %>% arrange(-share)
