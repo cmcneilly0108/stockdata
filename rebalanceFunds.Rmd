@@ -129,22 +129,6 @@ Load in the necessary files
 
 ```
 
-Read the files and prepare for processing
-```{r}
-# et <- read.csv('etrade.csv',stringsAsFactors = FALSE,skip=10) 
-# #et <- filter(et,!(Symbol %in% c('CASH','TOTAL')))
-# et <- head(et,-3)
-# portfolio <- mutate(et,type=ifelse(Symbol %in% c('YAFFX','PENNX','HFCGX','FAGIX','CHTTX','RZV','DGS','FM','VNQ','FPX','SPY','WHOSX','RSP','EQAL'),'fund','stock'))
-# #h2 <- read.csv("pfmDownload.csv",stringsAsFactors=FALSE)
-# colnames(portfolio) <- gsub("[^[:alnum:]///' ]", "", colnames(portfolio))
-# h2 <- filter(portfolio,type=='stock')
-# h2$Ticker <- as.character(h2$Symbol)
-# holdings <- h2$Ticker
-# holdings <- c(holdings,'CHGG','SPY')
-
-
-```
-
 
 Now lets analyze my mutual funds and their 12-month performance
 
